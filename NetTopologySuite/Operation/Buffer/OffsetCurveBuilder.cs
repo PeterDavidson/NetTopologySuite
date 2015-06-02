@@ -1,7 +1,6 @@
 ﻿using System;
 using GeoAPI.Geometries;
 using GeoAPI.Operation.Buffer;
-using GeoAPI.Operations.Buffer;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.GeometriesGraph;
 
@@ -251,6 +250,9 @@ namespace NetTopologySuite.Operation.Buffer
                 // MD - used for testing only (to eliminate simplification)
                 // Coordinate[] simp2 = inputPts;
                 var n2 = simp2.Length - 1;
+                if (_bufParams.EndCapStyle == EndCapStyle.Round) {
+                    segGen.AddLineEndCap(simp2[n2 - 1], simp2[n2], OffsetSegmentGenerator.EndCapOrientation.RightStart);
+                }
 
                 // since we are traversing line in opposite order, offset position is still LEFT
                 segGen.InitSideSegments(simp2[n2], simp2[n2 - 1], Positions.Left);
@@ -259,6 +261,13 @@ namespace NetTopologySuite.Operation.Buffer
                 {
                     segGen.AddNextSegment(simp2[i], true);
                 }
+                
+                if (_bufParams.EndCapStyle == EndCapStyle.Round) {
+                    segGen.AddLineEndCap(simp2[1], simp2[0], OffsetSegmentGenerator.EndCapOrientation.RightEnd);
+                } else {
+                    segGen.AddLastSegment();  
+                }
+
             }
             else
             {
@@ -272,14 +281,21 @@ namespace NetTopologySuite.Operation.Buffer
                 //      Coordinate[] simp1 = inputPts;
 
                 var n1 = simp1.Length - 1;
+                segGen.AddLineEndCap(simp1[1], simp1[0], OffsetSegmentGenerator.EndCapOrientation.LeftStart);
                 segGen.InitSideSegments(simp1[0], simp1[1], Positions.Left);
                 segGen.AddFirstSegment();
                 for (var i = 2; i <= n1; i++)
                 {
                     segGen.AddNextSegment(simp1[i], true);
                 }
+                if (_bufParams.EndCapStyle == EndCapStyle.Round) {
+
+                    segGen.AddLineEndCap(simp1[n1 - 1], simp1[n1], OffsetSegmentGenerator.EndCapOrientation.LeftEnd);
+                } else {
+                    segGen.AddLastSegment();
+                }
+
             }
-            segGen.AddLastSegment();
             segGen.CloseRing();
         }
 

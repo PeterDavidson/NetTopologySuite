@@ -1,7 +1,6 @@
 ﻿using System;
 using GeoAPI.Geometries;
 using GeoAPI.Operation.Buffer;
-using GeoAPI.Operations.Buffer;
 using NetTopologySuite.Algorithm;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.GeometriesGraph;
@@ -387,12 +386,22 @@ namespace NetTopologySuite.Operation.Buffer
             offset.P1.Y = seg.P1.Y + ux;
         }
 
+
+        public enum EndCapOrientation {
+            Full,
+            LeftStart,
+            LeftEnd,
+            RightStart,
+            RightEnd
+        }
+
         /// <summary>
         /// Add an end cap around point <paramref name="p1"/>, terminating a line segment coming from <paramref name="p0"/>
         /// </summary>
         /// <param name="p0"></param>
         /// <param name="p1"></param>
-        public void AddLineEndCap(Coordinate p0, Coordinate p1)
+        /// <param name="orientation"></param>
+        public void AddLineEndCap(Coordinate p0, Coordinate p1, EndCapOrientation orientation = EndCapOrientation.Full)
         {
             var seg = new LineSegment(p0, p1);
 
@@ -409,9 +418,25 @@ namespace NetTopologySuite.Operation.Buffer
             {
                 case EndCapStyle.Round:
                     // add offset seg points with a fillet between them
-                    _segList.AddPt(offsetL.P1);
-                    AddFillet(p1, angle + Math.PI / 2, angle - Math.PI / 2, CGAlgorithms.Clockwise, _distance);
-                    _segList.AddPt(offsetR.P1);
+                    switch (orientation) {
+                        case EndCapOrientation.Full:
+                            _segList.AddPt(offsetL.P1);
+                            AddFillet(p1, angle + (Math.PI / 2), angle - Math.PI / 2, CGAlgorithms.Clockwise, _distance);
+                            _segList.AddPt(offsetR.P1);
+                            break;
+                        case EndCapOrientation.LeftStart:
+                            AddFillet(p1, angle, angle + Math.PI/2, CGAlgorithms.Clockwise, _distance);
+                            break;
+                        case EndCapOrientation.LeftEnd:
+                            AddFillet(p1, angle + (Math.PI/2) , angle , CGAlgorithms.Clockwise, _distance);
+                            break;
+                        case EndCapOrientation.RightStart:
+                            AddFillet(p1, angle, angle + Math.PI / 2, CGAlgorithms.Clockwise, _distance);
+                            break;
+                        case EndCapOrientation.RightEnd:
+                            AddFillet(p1, angle + (Math.PI / 2), angle, CGAlgorithms.Clockwise, _distance);
+                            break;
+                    }
                     break;
                 case EndCapStyle.Flat:
                     // only offset segment points are added
