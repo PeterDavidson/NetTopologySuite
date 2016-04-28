@@ -80,8 +80,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6F9E6225-D390-4C9E-BEED-9B5487F477FD}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PCL", "PCL", "{3BFAD56F-221B-432B-B921-6AFDAE9C9CC2}"
@@ -275,3 +273,4 @@ Global
 		{ED064DF8-14B5-471B-896D-BBFEB21A5AA6} = {B21A27C1-F3D6-42A1-9C43-0516DB8E9CA8}
 	EndGlobalSection
 EndGlobal
+
